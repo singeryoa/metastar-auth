@@ -22,8 +22,8 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
     const supabase = createClient(
-      "https://YOUR_PROJECT_ID.supabase.co",
-      "YOUR_PUBLIC_ANON_KEY"
+      "https://wnnutjefmnuhnhevyohi.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NzM5NzcsImV4cCI6MjA2MzA0OTk3N30.ElS2qrbByPUcqQkDTqH6C1NxmKaFeww9en4WOo9YH54"
     );
 
     const { data: { user }, error } = await supabase.auth.getUser();
