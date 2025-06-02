@@ -1,0 +1,4 @@
+/onboarding    /onboarding.html    200
+/login         /login-test.html    200
+/auth-bridge   /auth-bridge.html   200
+/debug         /test-auth-debug.html    200
