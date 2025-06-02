@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Onboarding - 닉네임 설정</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body style="background:#000; color:#0f0; font-family:monospace; padding:40px;">
+  <h1>🧩 닉네임을 설정해주세요</h1>
+  <input id="nicknameInput" placeholder="nickname" style="padding:10px; width:240px;" />
+  <br /><br />
+  <button onclick="submitNickname()" style="padding:10px 20px;">Submit</button>
+  <pre id="result"></pre>
+  <script>
+    const client = window.supabase.createClient(
+      'https://wnnutjefmnuhnhevyohi.supabase.co',
+      'public-anon-key'
+    );
+    async function submitNickname() {
+      const nickname = document.getElementById("nicknameInput").value.trim();
+      const { data: { user } } = await client.auth.getUser();
+      const res = await client
+        .from("users")
+        .update({ nickname })
+        .eq("id", user.id)
+        .select();
+      document.getElementById("result").innerText = JSON.stringify(res, null, 2);
+      if (!res.error) {
+        window.location.href = "/maintown?nickname=" + encodeURIComponent(nickname);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auth Bridge</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body style="background:#000;color:#fff;padding:40px;font-family:sans-serif;">
+  <h2>Redirecting based on Supabase user status...</h2>
+  <script>
+    window.addEventListener('load', async () => {
+      const client = window.supabase.createClient(
+        'https://wnnutjefmnuhnhevyohi.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MTc1MzMsImV4cCI6MjA2MzA0OTk3M30.Nmg-eNUzJGhij2RaGpET0kFoFh1oxj95jftuEGibFE4'
+      );
+
+      let session = null;
+      for (let i = 0; i < 10; i++) {
+        const result = await client.auth.getSession();
+        if (result.data?.session) {
+          session = result.data.session;
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      if (!session) {
+        alert("로그인된 사용자 없음");
+        return;
+      }
+
+      const { data: userData } = await client.auth.getUser();
+      const { data: profile } = await client
+        .from("users")
+        .select("nickname")
+        .eq("id", userData?.user?.id)
+        .maybeSingle();
+
+      if (profile?.nickname && profile.nickname !== "anonymous") {
+        window.location.href = "/maintown?nickname=" + encodeURIComponent(profile.nickname);
+      } else {
+        window.location.href = "/onboarding";
+      }
+    });
+  </script>
+</body>
+</html>

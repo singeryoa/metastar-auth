@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login Test</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body style="background:#000; color:#0f0; font-family:monospace; padding:40px;">
+  <h1>🧪 Supabase 구글 로그인 테스트</h1>
+  <button onclick="loginWithGoogle()">구글로 로그인</button>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://wnnutjefmnuhnhevyohi.supabase.co',
+      'public-anon-key'
+    );
+    function loginWithGoogle() {
+      supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://spectacular-stardust-2a5e9a.netlify.app/auth-bridge.html'
+        }
+      });
+    }
+  </script>
+</body>
+</html>

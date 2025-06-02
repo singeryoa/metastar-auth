@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Supabase Auth Debug</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body style="background:#000; color:#0f0; font-family:monospace; padding:40px;">
+  <h1>🔍 Supabase 세션 상태 점검</h1>
+  <pre id="output">Loading...</pre>
+  <script>
+    window.addEventListener('load', async () => {
+      const client = window.supabase.createClient(
+        'https://wnnutjefmnuhnhevyohi.supabase.co',
+        'public-anon-key'
+      );
+      const output = document.getElementById("output");
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      const { data: userData, error: userError } = await client.auth.getUser();
+      const { data: profileData, error: profileError } = await client
+        .from("users")
+        .select("*")
+        .eq("id", userData?.user?.id)
+        .maybeSingle();
+      output.innerText = `
+🟢 Supabase 연결됨
+✅ access_token: ${sessionData?.session?.access_token || '없음'}
+✅ 유저 ID: ${userData?.user?.id || '없음'}
+✅ 이메일: ${userData?.user?.email || '없음'}
+
+📦 users 테이블:
+${profileData ? JSON.stringify(profileData, null, 2) : '조회 실패'}
+
+❗오류 정보:
+sessionError: ${sessionError?.message || '없음'}
+userError: ${userError?.message || '없음'}
+profileError: ${profileError?.message || '없음'}
+`;
+    });
+  </script>
+</body>
+</html>
