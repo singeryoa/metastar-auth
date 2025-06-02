@@ -1,19 +1,20 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>Login Test</title>
+  <meta charset="UTF-8">
+  <title>Supabase 구글 로그인 테스트</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
-<body style="background:#000; color:#0f0; font-family:monospace; padding:40px;">
-  <h1>🧪 Supabase 구글 로그인 테스트</h1>
+<body style="background:black; color:lime;font-family:monospace;">
+  <h2>🔨 <span style="color:#0f0">Supabase</span> 구글 로그인 테스트</h2>
   <button onclick="loginWithGoogle()">구글로 로그인</button>
+
   <script>
-    const supabase = window.supabase.createClient(
+    const supabase = supabase.createClient(
       'https://wnnutjefmnuhnhevyohi.supabase.co',
-      'public-anon-key'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NzM5NzcsImV4cCI6MjA2MzA0OTk3N30.ElS2qrbByPUcqQkDTqH6C1NxmKaFeww9en4WOo9YH54'
     );
+
     function loginWithGoogle() {
       supabase.auth.signInWithOAuth({
         provider: 'google',

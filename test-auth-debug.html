@@ -1,42 +1,26 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Supabase Auth Debug</title>
+  <title>Supabase 세션 디버그</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
-<body style="background:#000; color:#0f0; font-family:monospace; padding:40px;">
-  <h1>🔍 Supabase 세션 상태 점검</h1>
-  <pre id="output">Loading...</pre>
+<body style="background:black; color:lime;font-family:monospace;">
+  <h2>🔍 Supabase 세션 상태 점검</h2>
+  <pre id="log">Loading...</pre>
+
   <script>
-    window.addEventListener('load', async () => {
-      const client = window.supabase.createClient(
-        'https://wnnutjefmnuhnhevyohi.supabase.co',
-        'public-anon-key'
-      );
-      const output = document.getElementById("output");
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-      const { data: userData, error: userError } = await client.auth.getUser();
-      const { data: profileData, error: profileError } = await client
-        .from("users")
-        .select("*")
-        .eq("id", userData?.user?.id)
-        .maybeSingle();
-      output.innerText = `
-🟢 Supabase 연결됨
-✅ access_token: ${sessionData?.session?.access_token || '없음'}
-✅ 유저 ID: ${userData?.user?.id || '없음'}
-✅ 이메일: ${userData?.user?.email || '없음'}
+    const log = document.getElementById('log');
 
-📦 users 테이블:
-${profileData ? JSON.stringify(profileData, null, 2) : '조회 실패'}
+    const supabase = supabase.createClient(
+      'https://wnnutjefmnuhnhevyohi.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NzM5NzcsImV4cCI6MjA2MzA0OTk3N30.ElS2qrbByPUcqQkDTqH6C1NxmKaFeww9en4WOo9YH54'
+    );
 
-❗오류 정보:
-sessionError: ${sessionError?.message || '없음'}
-userError: ${userError?.message || '없음'}
-profileError: ${profileError?.message || '없음'}
-`;
+    document.addEventListener('DOMContentLoaded', async () => {
+      const result = await supabase.auth.getSession();
+      const session = result.data.session;
+      log.innerText = JSON.stringify(session, null, 2);
     });
   </script>
 </body>

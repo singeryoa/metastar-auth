@@ -1,33 +1,38 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>Onboarding - 닉네임 설정</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <meta charset="UTF-8">
+  <title>Onboarding</title>
 </head>
-<body style="background:#000; color:#0f0; font-family:monospace; padding:40px;">
-  <h1>🧩 닉네임을 설정해주세요</h1>
-  <input id="nicknameInput" placeholder="nickname" style="padding:10px; width:240px;" />
-  <br /><br />
-  <button onclick="submitNickname()" style="padding:10px 20px;">Submit</button>
-  <pre id="result"></pre>
+<body style="background:black; color:lime;font-family:monospace;">
+  <h2>🧑‍🚀 닉네임 등록</h2>
+  <input type="text" id="nickname" placeholder="닉네임 입력">
+  <button onclick="submitNickname()">등록</button>
+
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
-    const client = window.supabase.createClient(
+    const urlParams = new URLSearchParams(location.search);
+    const id = urlParams.get('id');
+    const email = urlParams.get('email');
+
+    const supabase = supabase.createClient(
       'https://wnnutjefmnuhnhevyohi.supabase.co',
-      'public-anon-key'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NzM5NzcsImV4cCI6MjA2MzA0OTk3N30.ElS2qrbByPUcqQkDTqH6C1NxmKaFeww9en4WOo9YH54'
     );
+
     async function submitNickname() {
-      const nickname = document.getElementById("nicknameInput").value.trim();
-      const { data: { user } } = await client.auth.getUser();
-      const res = await client
+      const nickname = document.getElementById("nickname").value;
+      if (!nickname) return alert("닉네임 입력하세요");
+
+      const { error } = await supabase
         .from("users")
         .update({ nickname })
-        .eq("id", user.id)
-        .select();
-      document.getElementById("result").innerText = JSON.stringify(res, null, 2);
-      if (!res.error) {
-        window.location.href = "/maintown?nickname=" + encodeURIComponent(nickname);
+        .eq("id", id);
+
+      if (error) {
+        alert("등록 실패");
+      } else {
+        location.href = `/maintown?nickname=${encodeURIComponent(nickname)}`;
       }
     }
   </script>
