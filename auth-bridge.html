@@ -1,49 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecting...</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <title>로그인 처리 중...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+  </style>
 </head>
-<body style="background:black; color:lime;font-family:monospace;">
-  <h2>🔁 Redirecting based on Supabase user status...</h2>
+<body>
+  <h2>🔄 로그인 처리 중입니다...</h2>
+  <p>잠시만 기다려주세요...</p>
 
-  <script>
-    const supabase = supabase.createClient(
-      'https://wnnutjefmnuhnhevyohi.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NzM5NzcsImV4cCI6MjA2MzA0OTk3N30.ElS2qrbByPUcqQkDTqH6C1NxmKaFeww9en4WOo9YH54'
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      "https://YOUR_PROJECT_ID.supabase.co",
+      "YOUR_PUBLIC_ANON_KEY"
     );
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData?.session;
-      if (!session) {
-        alert("preeminent-torrone-94b7a3.netlify.app 내용:
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-로그인된 사용자 없음");
-        return;
-      }
+    if (error || !user) {
+      console.error("❌ 유저 정보를 불러올 수 없습니다:", error);
+      alert("로그인 세션이 유효하지 않습니다.");
+      window.location.href = '/login-test.html';
+      return;
+    }
 
-      const id = session.user.id;
-      const email = session.user.email;
+    const id = user.id;
+    const email = user.email;
 
-      const { data: userRow, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
+    const { data: userRow, error: userFetchError } = await supabase
+      .from('users')
+      .select('nickname')
+      .eq('id', id)
+      .single();
 
-      if (error) {
-        alert("❌ 사용자 조회 실패");
-        return;
-      }
+    if (userFetchError) {
+      console.error("❌ Supabase users 테이블에서 nickname 조회 실패:", userFetchError);
+      alert("유저 정보 조회 실패");
+      window.location.href = '/login-test.html';
+      return;
+    }
 
-      if (userRow?.nickname) {
-        window.location.href = `/maintown?nickname=${encodeURIComponent(userRow.nickname)}`;
-      } else {
-        window.location.href = `/onboarding.html?id=${id}&email=${encodeURIComponent(email)}`;
-      }
-    });
+    if (userRow?.nickname) {
+      window.location.href = `/maintown?nickname=${encodeURIComponent(userRow.nickname)}`;
+    } else {
+      window.location.href = `/onboarding.html?id=${id}&email=${encodeURIComponent(email)}`;
+    }
   </script>
 </body>
 </html>
