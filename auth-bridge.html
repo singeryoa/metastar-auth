@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>로그인 처리 중...</title>
+  <title>로그인 중...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -15,8 +15,7 @@
   </style>
 </head>
 <body>
-  <h2>🔄 로그인 처리 중입니다...</h2>
-  <p>잠시만 기다려주세요...</p>
+  <h2>🔁 Redirecting based on Supabase user status...</h2>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
@@ -26,34 +25,50 @@
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubnV0amVmbW51aG5oZXZ5b2hpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NzM5NzcsImV4cCI6MjA2MzA0OTk3N30.ElS2qrbByPUcqQkDTqH6C1NxmKaFeww9en4WOo9YH54"
     );
 
-    const { data: { user }, error } = await supabase.auth.getUser();
+    let user = null;
+    for (let i = 0; i < 5; i++) {
+      const result = await supabase.auth.getUser();
+      if (result.data?.user) {
+        user = result.data.user;
+        console.log("✅ 유저 인증 완료:", user);
+        break;
+      }
+      console.log(`⏳ getUser 재시도 중 (${i + 1})...`);
+      await new Promise(r => setTimeout(r, 500));
+    }
 
-    if (error || !user) {
-      console.error("❌ 유저 정보를 불러올 수 없습니다:", error);
-      alert("로그인 세션이 유효하지 않습니다.");
-      window.location.href = '/login-test.html';
+    if (!user) {
+      console.error("❌ getUser 실패 - 유저 정보 없음");
+      alert("로그인 세션이 만료되었거나 유효하지 않습니다.");
+      window.location.href = "/login-test.html";
       return;
     }
 
     const id = user.id;
     const email = user.email;
+    console.log("🧾 유저 ID:", id, "이메일:", email);
 
     const { data: userRow, error: userFetchError } = await supabase
-      .from('users')
-      .select('nickname')
-      .eq('id', id)
+      .from("users")
+      .select("nickname")
+      .eq("id", id)
       .single();
 
     if (userFetchError) {
-      console.error("❌ Supabase users 테이블에서 nickname 조회 실패:", userFetchError);
-      alert("유저 정보 조회 실패");
-      window.location.href = '/login-test.html';
+      console.error("❌ nickname 조회 실패:", userFetchError);
+      alert("유저 정보 조회 중 오류가 발생했습니다.");
+      window.location.href = "/login-test.html";
       return;
     }
 
-    if (userRow?.nickname) {
-      window.location.href = `/maintown?nickname=${encodeURIComponent(userRow.nickname)}`;
+    console.log("🧠 userRow:", userRow);
+
+    if (userRow && userRow.nickname) {
+      const encoded = encodeURIComponent(userRow.nickname);
+      console.log("➡️ 기존 유저 → /maintown 이동:", encoded);
+      window.location.href = `/maintown?nickname=${encoded}`;
     } else {
+      console.log("🆕 신규 유저 → /onboarding 이동");
       window.location.href = `/onboarding.html?id=${id}&email=${encodeURIComponent(email)}`;
     }
   </script>
